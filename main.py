@@ -47,5 +47,7 @@ ins = clean_stations_table.insert()
 clean_stations = read_table('clean_stations')
 conn.execute(ins, clean_stations)
 
+print(conn.execute("SELECT * FROM clean_stations LIMIT 5").fetchall())
+
 conn.close()
 
