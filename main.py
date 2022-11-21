@@ -1,6 +1,6 @@
 import sqlalchemy.sql
 from sqlalchemy import Table, Column, Integer, String, MetaData, Float
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, and_
 import csv
 
 engine = create_engine('sqlite:///database.db', echo=True)
@@ -56,9 +56,9 @@ if __name__ == '__main__':
     for row in result:
         print(row)
 
-    query = clean_measure_table.select().where(clean_measure_table.c.date == '2017-07-25')
+    query = clean_measure_table.select().where(and_(clean_measure_table.c.date == '2017-07-25', clean_measure_table.c.station == 'USC00519397'))
     print(f'Rekord {conn.execute(query).fetchall()} został usunięty.')
-    delete = clean_measure_table.delete().where(clean_measure_table.c.date == '2017-07-25')
+    delete = clean_measure_table.delete().where(and_(clean_measure_table.c.date == '2017-07-25', clean_measure_table.c.station == 'USC00519397'))
     conn.execute(delete)
 
     upt = clean_measure_table.update().where(clean_measure_table.c.id == 2).values(station='NOWA')
