@@ -1,5 +1,6 @@
+import sqlalchemy.sql
 from sqlalchemy import Table, Column, Integer, String, MetaData, Float
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 import csv
 
 engine = create_engine('sqlite:///database.db', echo=True)
@@ -43,12 +44,26 @@ if __name__ == '__main__':
 
     conn = engine.connect()
     ins = clean_measure_table.insert()
+
     clean_measure = read_table('clean_measure')
     conn.execute(ins, clean_measure)
     ins = clean_stations_table.insert()
     clean_stations = read_table('clean_stations')
     conn.execute(ins, clean_stations)
 
+    query = clean_measure_table.select().where(clean_measure_table.c.station == 'USC00519397')
+    result = conn.execute(query)
+    for row in result:
+        print(row)
+
+    query = clean_measure_table.select().where(clean_measure_table.c.date == '2017-07-25')
+    print(f'Rekord {conn.execute(query).fetchall()} został usunięty.')
+    delete = clean_measure_table.delete().where(clean_measure_table.c.date == '2017-07-25')
+    conn.execute(delete)
+
+    upt = clean_measure_table.update().where(clean_measure_table.c.id == 2).values(station='NOWA')
+    conn.execute(upt)
+    print(conn.execute(clean_measure_table.select().where(clean_measure_table.c.station == "NOWA")).fetchall())
     print(conn.execute("SELECT * FROM clean_stations LIMIT 5").fetchall())
 
     conn.close()
